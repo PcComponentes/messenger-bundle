@@ -1,0 +1,26 @@
+{
+  "name": "pccomponentes/messenger-bundle",
+  "description": "Symfony Messenger Bundle",
+  "license": "MIT",
+  "type": "symfony-bundle",
+  "authors": [
+    {
+      "name": "Zoilo Mora",
+      "email": "zoilo.mora@pccomponentes.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "PcComponentes\\SymfonyMessengerBundle\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^7.4",
+    "pccomponentes/ddd-logging": "^2.0",
+    "pccomponentes/ddd": "^1.2",
+    "beberlei/assert": "^3.2"
+  },
+  "require-dev": {
+    "pccomponentes/coding-standard": "^1.0"
+  }
+}
