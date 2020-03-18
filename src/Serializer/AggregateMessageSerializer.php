@@ -5,11 +5,13 @@ namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 
 use Assert\Assert;
 use Pccomponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use Pccomponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
 use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageJsonApiSerializable;
 use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStream;
 use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 
 final class AggregateMessageSerializer extends DomainSerializer
 {
@@ -32,7 +34,12 @@ final class AggregateMessageSerializer extends DomainSerializer
     public function decode(array $encodedEnvelope): Envelope
     {
         $message = $this->streamFromEncodedEnvelope($encodedEnvelope);
-        $aggregateMessage = $this->deserializer->unserialize($message);
+
+        try {
+            $aggregateMessage = $this->deserializer->unserialize($message);
+        } catch (MessageClassNotFoundException $exception) {
+            throw new MessageDecodingFailedException();
+        }
 
         $this->obtainDomainTrace($aggregateMessage, $encodedEnvelope);
 
