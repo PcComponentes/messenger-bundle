@@ -4,11 +4,13 @@ declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 
 use Assert\Assert;
+use Pccomponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
 use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSerializable;
 use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStream;
 use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 
 final class SimpleMessageSerializer extends DomainSerializer
 {
@@ -29,7 +31,12 @@ final class SimpleMessageSerializer extends DomainSerializer
     public function decode(array $encodedEnvelope): Envelope
     {
         $message = $this->streamFromEncodedEnvelope($encodedEnvelope);
-        $simpleMessage = $this->deserializer->unserialize($message);
+
+        try {
+            $simpleMessage = $this->deserializer->unserialize($message);
+        } catch (MessageClassNotFoundException $exception) {
+            throw new MessageDecodingFailedException();
+        }
 
         $this->obtainDomainTrace($simpleMessage, $encodedEnvelope);
 

@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 final class MappingRegistryCompilerPass implements CompilerPassInterface
 {
-    private const PREFIX_SERVICE_ALIAS = 'mybundle.mapping_registry';
+    private const PREFIX_SERVICE_ALIAS = 'pccom.messenger_bundle.mapping_registry';
     private const INTERFACES = [
         'simple_message' => SimpleMessage::class,
         'command' => Command::class,

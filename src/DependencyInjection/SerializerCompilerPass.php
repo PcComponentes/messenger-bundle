@@ -22,41 +22,41 @@ final class SerializerCompilerPass implements CompilerPassInterface
         $container->register(Tracker::class, Tracker::class);
 
         $container->addDefinitions([
-            'mybundle.aggregate_message.serializer' => new Definition(
+            'pccom.messenger_bundle.aggregate_message.serializer' => new Definition(
                 AggregateMessageSerializer::class,
                 [
                     new Reference(Tracker::class),
-                    new Reference('mybundle.aggregate_message.serializer.json_api_serializer'),
-                    new Reference('mybundle.aggregate_message.serializer.stream_deserializer'),
+                    new Reference('pccom.messenger_bundle.aggregate_message.serializer.json_api_serializer'),
+                    new Reference('pccom.messenger_bundle.aggregate_message.serializer.stream_deserializer'),
                 ],
             ),
-            'mybundle.aggregate_message.serializer.json_api_serializer' => new Definition(
+            'pccom.messenger_bundle.aggregate_message.serializer.json_api_serializer' => new Definition(
                 AggregateMessageJsonApiSerializable::class,
             ),
-            'mybundle.aggregate_message.serializer.stream_deserializer' => new Definition(
+            'pccom.messenger_bundle.aggregate_message.serializer.stream_deserializer' => new Definition(
                 AggregateMessageStreamDeserializer::class,
                 [
-                    new Reference('mybundle.mapping_registry.aggregate_message'),
+                    new Reference('pccom.messenger_bundle.mapping_registry.aggregate_message'),
                 ],
             ),
         ]);
 
         $container->addDefinitions([
-            'mybundle.simple_message.serializer' => new Definition(
+            'pccom.messenger_bundle.simple_message.serializer' => new Definition(
                 SimpleMessageSerializer::class,
                 [
                     new Reference(Tracker::class),
-                    new Reference('mybundle.simple_message.serializer.json_api_serializer'),
-                    new Reference('mybundle.simple_message.serializer.stream_deserializer'),
+                    new Reference('pccom.messenger_bundle.simple_message.serializer.json_api_serializer'),
+                    new Reference('pccom.messenger_bundle.simple_message.serializer.stream_deserializer'),
                 ],
             ),
-            'mybundle.simple_message.serializer.json_api_serializer' => new Definition(
+            'pccom.messenger_bundle.simple_message.serializer.json_api_serializer' => new Definition(
                 SimpleMessageJsonApiSerializable::class,
             ),
-            'mybundle.simple_message.serializer.stream_deserializer' => new Definition(
+            'pccom.messenger_bundle.simple_message.serializer.stream_deserializer' => new Definition(
                 SimpleMessageStreamDeserializer::class,
                 [
-                    new Reference('mybundle.mapping_registry.simple_message'),
+                    new Reference('pccom.messenger_bundle.mapping_registry.simple_message'),
                 ],
             ),
         ]);
