@@ -65,7 +65,11 @@ final class MappingRegistryCompilerPass implements CompilerPassInterface
                 if (false !== \is_dir($path . $filename)) {
                     continue;
                 }
-
+    
+                if (0 === preg_match("/^.*\.(php)$/", $filename)) {
+                    continue;
+                }
+                
                 $files[] = $path . $filename;
             }
 
