@@ -16,7 +16,7 @@
   },
   "require": {
     "php": "^7.4",
-    "pccomponentes/ddd-logging": "^2.1",
+    "pccomponentes/ddd-logging": "^2.0",
     "pccomponentes/ddd": "^1.2",
     "beberlei/assert": "^3.2"
   },
