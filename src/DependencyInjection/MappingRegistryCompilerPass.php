@@ -66,7 +66,7 @@ final class MappingRegistryCompilerPass implements CompilerPassInterface
                     continue;
                 }
     
-                if (0 === preg_match("/^.*\.(php)$/", $filename)) {
+                if (0 === \preg_match("/^.*\.(php)$/", $filename)) {
                     continue;
                 }
                 
