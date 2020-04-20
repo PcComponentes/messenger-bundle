@@ -7,6 +7,10 @@
     {
       "name": "Zoilo Mora",
       "email": "zoilo.mora@pccomponentes.com"
+    },
+    {
+      "name": "Aarón Bernabeu",
+      "email": "aaron.bernabeu@pccomponentes.com"
     }
   ],
   "autoload": {
