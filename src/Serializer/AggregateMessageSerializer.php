@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 
 use Assert\Assert;
-use Pccomponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
-use Pccomponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
-use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageJsonApiSerializable;
-use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStream;
-use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStreamDeserializer;
+use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
+use PcComponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageJsonApiSerializable;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStream;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
