@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 
 use Assert\Assert;
-use Pccomponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
-use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSerializable;
-use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStream;
-use Pccomponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
+use PcComponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSerializable;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStream;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
