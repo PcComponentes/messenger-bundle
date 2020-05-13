@@ -28,7 +28,7 @@ final class MappingRegistryCompilerPass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container): void
     {
-        $rootDir = \sprintf('%s/', $container->getParameter('kernel.root_dir'));
+        $rootDir = \sprintf('%s/src/', $container->getParameter('kernel.project_dir'));
         $files = $this->listDirectory($rootDir);
 
         foreach (self::INTERFACES as $name => $interface) {
