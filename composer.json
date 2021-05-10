@@ -27,11 +27,11 @@
     "php": "^7.4",
     "pccomponentes/ddd-logging": "^2.1",
     "pccomponentes/ddd": "^2.0",
-    "beberlei/assert": "^3.2",
-    "phpunit/phpunit": "^9.0"
+    "beberlei/assert": "^3.2"
   },
   "require-dev": {
     "ext-json": "*",
-    "pccomponentes/coding-standard": "^1.0"
+    "pccomponentes/coding-standard": "^1.0",
+    "phpunit/phpunit": "^9.0"
   }
 }
