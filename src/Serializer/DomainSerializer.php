@@ -6,6 +6,7 @@ namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\Ddd\Util\Message\Message;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
+use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 abstract class DomainSerializer implements SerializerInterface
@@ -44,6 +45,10 @@ abstract class DomainSerializer implements SerializerInterface
     private function getCorrelationId(array $encodedEnvelope): string
     {
         if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])) {
+            if (null === $encodedEnvelope['headers']['x-correlation-id']) {
+                throw new MessageDecodingFailedException('Message has a null value for x-correlation-id header.');
+            }
+
             return $encodedEnvelope['headers']['x-correlation-id'];
         }
 
