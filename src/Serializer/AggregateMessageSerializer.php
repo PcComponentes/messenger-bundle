@@ -40,7 +40,6 @@ final class AggregateMessageSerializer extends DomainSerializer
         try {
             $aggregateMessage = $this->deserializer->unserialize($message);
         } catch (MessageClassNotFoundException $exception) {
-            echo $exception;
             throw new MessageDecodingFailedException();
         }
 

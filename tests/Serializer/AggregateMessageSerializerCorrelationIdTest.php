@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Tests\Serializer;
 
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
@@ -81,16 +80,16 @@ class AggregateMessageSerializerCorrelationIdTest extends TestCase
     {
         $message = [
             'body' => \json_encode([
-                "message_id" => self::MESSAGE_ID,
-                "name" => AggregateCreated::messageName(),
-                "version" => AggregateCreated::messageVersion(),
-                "type" => "domain_event",
-                "payload" => [
-                    "id" => "9e7a9d6a-f9cb-4de8-950b-a84c2c1abe66",
-                    "familyId" => "6ce04f54-4c48-4d76-b37a-12648d38536d",
+                'message_id' => self::MESSAGE_ID,
+                'name' => AggregateCreated::messageName(),
+                'version' => AggregateCreated::messageVersion(),
+                'type' => 'domain_event',
+                'payload' => [
+                    'id' => '9e7a9d6a-f9cb-4de8-950b-a84c2c1abe66',
+                    'familyId' => '6ce04f54-4c48-4d76-b37a-12648d38536d',
                 ],
-                "aggregate_id" => "9e7a9d6a-f9cb-4de8-950b-a84c2c1abe66",
-                "occurred_on"=> "2021-05-07T08:44:48+00:00",
+                'aggregate_id' => '9e7a9d6a-f9cb-4de8-950b-a84c2c1abe66',
+                'occurred_on' => '2021-05-07T08:44:48+00:00',
             ]),
             'headers' => [
                 'Content-Type' => 'application/json',
