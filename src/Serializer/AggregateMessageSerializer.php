@@ -33,11 +33,14 @@ final class AggregateMessageSerializer extends DomainSerializer
 
     public function decode(array $encodedEnvelope): Envelope
     {
+        $this->assertCorrelationIdIfAvailable($encodedEnvelope);
+
         $message = $this->streamFromEncodedEnvelope($encodedEnvelope);
 
         try {
             $aggregateMessage = $this->deserializer->unserialize($message);
         } catch (MessageClassNotFoundException $exception) {
+            echo $exception;
             throw new MessageDecodingFailedException();
         }
 

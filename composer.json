@@ -18,13 +18,20 @@
       "PcComponentes\\SymfonyMessengerBundle\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "PcComponentes\\SymfonyMessengerBundle\\Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": "^7.4",
     "pccomponentes/ddd-logging": "^2.1",
     "pccomponentes/ddd": "^2.0",
-    "beberlei/assert": "^3.2"
+    "beberlei/assert": "^3.2",
+    "phpunit/phpunit": "^9.0"
   },
   "require-dev": {
+    "ext-json": "*",
     "pccomponentes/coding-standard": "^1.0"
   }
 }

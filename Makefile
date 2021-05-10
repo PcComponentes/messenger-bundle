@@ -22,3 +22,7 @@ bash:
 
 logs:
 		docker-compose logs -f ${DOCKER_PHP_SERVICE}
+
+.PHONY: tests
+tests:
+		docker-compose run -u ${UID} ${DOCKER_PHP_SERVICE} sh -c "phpunit --testsuite main --order=random"

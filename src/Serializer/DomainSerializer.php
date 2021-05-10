@@ -42,13 +42,20 @@ abstract class DomainSerializer implements SerializerInterface
         );
     }
 
+    protected function assertCorrelationIdIfAvailable(array $encodedEnvelope): void
+    {
+        if (false === \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])) {
+            return;
+        }
+
+        if (null === $encodedEnvelope['headers']['x-correlation-id']) {
+            throw new MessageDecodingFailedException('Message has a null value for x-correlation-id header.');
+        }
+    }
+
     private function getCorrelationId(array $encodedEnvelope): string
     {
         if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])) {
-            if (null === $encodedEnvelope['headers']['x-correlation-id']) {
-                throw new MessageDecodingFailedException('Message has a null value for x-correlation-id header.');
-            }
-
             return $encodedEnvelope['headers']['x-correlation-id'];
         }
 

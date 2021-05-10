@@ -30,6 +30,8 @@ final class SimpleMessageSerializer extends DomainSerializer
 
     public function decode(array $encodedEnvelope): Envelope
     {
+        $this->assertCorrelationIdIfAvailable($encodedEnvelope);
+
         $message = $this->streamFromEncodedEnvelope($encodedEnvelope);
 
         try {
