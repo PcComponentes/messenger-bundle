@@ -46,8 +46,8 @@ class AggregateMessageSerializerCorrelationIdTest extends TestCase
     {
         $this->expectException(MessageDecodingFailedException::class);
         $this->expectExceptionMessage('Message has a null value for x-correlation-id header.');
-        $message = $this->getMessage(null);
 
+        $message = $this->getMessage(null);
         $this->aggregateMessageSerializer->decode($message);
     }
 
