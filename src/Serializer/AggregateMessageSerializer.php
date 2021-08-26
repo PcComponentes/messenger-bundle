@@ -43,7 +43,9 @@ final class AggregateMessageSerializer extends DomainSerializer
 
         $this->obtainDomainTrace($aggregateMessage, $encodedEnvelope);
 
-        return new Envelope($aggregateMessage);
+        $retryCount = $this->extractHeaderRetryCount($encodedEnvelope);
+
+        return (new Envelope($simpleMessage))->with(new RedeliveryStamp($retryCount));
     }
 
     public function encode(Envelope $envelope): array
@@ -56,6 +58,7 @@ final class AggregateMessageSerializer extends DomainSerializer
                 'Content-Type' => 'application/json',
                 'x-correlation-id' => $this->tracker()->correlationId(),
                 'x-reply-to' => $this->tracker()->replyTo(),
+                'x-retry-count' => $this->extractEnvelopeRetryCount($envelope),
             ],
         ];
     }

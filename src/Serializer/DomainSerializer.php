@@ -41,6 +41,23 @@ abstract class DomainSerializer implements SerializerInterface
         );
     }
 
+    protected function extractHeaderRetryCount(array $encodedEnvelope): int
+    {
+        if (false === \array_key_exists('x-retry-count', $encodedEnvelope['headers'])) {
+            return 0;
+        }
+
+        return (int) $encodedEnvelope['headers']['x-retry-count'];
+    }
+
+    protected function extractEnvelopeRetryCount(Envelope $envelope): int
+    {
+        $retryCountStamp = $envelope->last(RedeliveryStamp::class);
+        $retryCount = null !== $retryCountStamp ? $retryCountStamp->getRetryCount() : 0;
+
+        return $retryCount;
+    }
+
     private function getCorrelationId(array $encodedEnvelope): string
     {
         if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])) {
