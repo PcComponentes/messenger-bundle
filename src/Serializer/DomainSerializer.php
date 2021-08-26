@@ -43,7 +43,9 @@ abstract class DomainSerializer implements SerializerInterface
 
     private function getCorrelationId(array $encodedEnvelope): string
     {
-        if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])) {
+        if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])
+            && null !== $encodedEnvelope['headers']['x-correlation-id']
+        ) {
             return $encodedEnvelope['headers']['x-correlation-id'];
         }
 
