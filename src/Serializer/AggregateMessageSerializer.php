@@ -12,6 +12,7 @@ use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStreamD
 use PcComponentes\DddLogging\DomainTrace\Tracker;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
+use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 
 final class AggregateMessageSerializer extends DomainSerializer
 {
