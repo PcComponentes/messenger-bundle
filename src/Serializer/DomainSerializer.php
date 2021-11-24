@@ -54,9 +54,8 @@ abstract class DomainSerializer implements SerializerInterface
     protected function extractEnvelopeRetryCount(Envelope $envelope): int
     {
         $retryCountStamp = $envelope->last(RedeliveryStamp::class);
-        $retryCount = null !== $retryCountStamp ? $retryCountStamp->getRetryCount() : 0;
-
-        return $retryCount;
+        
+        return null !== $retryCountStamp ? $retryCountStamp->getRetryCount() : 0;
     }
 
     private function getCorrelationId(array $encodedEnvelope): string
