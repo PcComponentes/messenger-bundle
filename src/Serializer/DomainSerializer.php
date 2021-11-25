@@ -6,6 +6,7 @@ namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\Ddd\Util\Message\Message;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
+use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 abstract class DomainSerializer implements SerializerInterface
@@ -39,6 +40,22 @@ abstract class DomainSerializer implements SerializerInterface
             $replyTo,
             $message->messageId(),
         );
+    }
+
+    protected function extractHeaderRetryCount(array $encodedEnvelope): int
+    {
+        if (false === \array_key_exists('x-retry-count', $encodedEnvelope['headers'])) {
+            return 0;
+        }
+
+        return (int) $encodedEnvelope['headers']['x-retry-count'];
+    }
+
+    protected function extractEnvelopeRetryCount(Envelope $envelope): int
+    {
+        $retryCountStamp = $envelope->last(RedeliveryStamp::class);
+        
+        return null !== $retryCountStamp ? $retryCountStamp->getRetryCount() : 0;
     }
 
     private function getCorrelationId(array $encodedEnvelope): string
