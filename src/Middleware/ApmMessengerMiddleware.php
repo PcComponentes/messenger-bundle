@@ -24,14 +24,14 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
 
         $parentDistributedTracingHeaders = [];
         $currentTransaction->injectDistributedTracingHeaders(
-            function (string $headerName, string $headerValue) use (&$parentDistributedTracingHeaders): void {
+            static function (string $headerName, string $headerValue) use (&$parentDistributedTracingHeaders): void {
                 $parentDistributedTracingHeaders[$headerName] = $headerValue;
             }
         );
 
         $transaction = \Elastic\Apm\ElasticApm::newTransaction($message::messageName(), self::ELASTIC_APM_MESSAGE_TYPE)
             ->distributedTracingHeaderExtractor(
-                function (string $headerName) use ($parentDistributedTracingHeaders): ?string {
+                static function (string $headerName) use ($parentDistributedTracingHeaders): ?string {
                     return \array_key_exists($headerName, $parentDistributedTracingHeaders)
                         ? $parentDistributedTracingHeaders[$headerName]
                         : null;
