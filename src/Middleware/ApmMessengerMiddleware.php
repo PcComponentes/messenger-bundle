@@ -31,11 +31,7 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
 
         $transaction = \Elastic\Apm\ElasticApm::newTransaction($message::messageName(), self::ELASTIC_APM_MESSAGE_TYPE)
             ->distributedTracingHeaderExtractor(
-                static function (string $headerName) use ($parentDistributedTracingHeaders): ?string {
-                    return \array_key_exists($headerName, $parentDistributedTracingHeaders)
-                        ? $parentDistributedTracingHeaders[$headerName]
-                        : null;
-                }
+                static fn (string $headerName) => $parentDistributedTracingHeaders[$headerName] ?? null,
             )
             ->asCurrent()
             ->begin();
