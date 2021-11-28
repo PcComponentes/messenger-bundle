@@ -45,6 +45,14 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
 
         try {
             $envelope = $stack->next()->handle($envelope, $stack);
+        } catch (\Throwable $exception) {
+            $error = new  \Elastic\Apm\CustomErrorData();
+            $error->message = $exception->getMessage();
+            $error->code = $exception->getCode();
+
+            $transaction->createCustomError($error);
+
+            throw $exception;
         } finally {
             $transaction->end();
         }
