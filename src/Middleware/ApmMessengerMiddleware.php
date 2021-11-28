@@ -22,6 +22,24 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
             return $stack->next()->handle($envelope, $stack);
         }
 
+        $this->loadMainDistributedTracingHeaders();
+
+        $transaction = $this->createApmTransaction($message::messageName());
+
+        try {
+            $envelope = $stack->next()->handle($envelope, $stack);
+        } catch (\Throwable $exception) {
+            $this->addTransactionError($transaction, $exception);
+            throw $exception;
+        } finally {
+            $transaction->end();
+        }
+
+        return $envelope;
+    }
+
+    private function loadMainDistributedTracingHeaders(): array
+    {
         $currentTransaction = \Elastic\Apm\ElasticApm::getCurrentTransaction();
 
         $parentDistributedTracingHeaders = [];
@@ -35,28 +53,26 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
             $this->mainDistributedTracingHeaders,
             $parentDistributedTracingHeaders,
         );
+    }
 
-        $transaction = \Elastic\Apm\ElasticApm::newTransaction($message::messageName(), self::ELASTIC_APM_MESSAGE_TYPE)
+    private function createApmTransaction($messageName)
+    {
+        return \Elastic\Apm\ElasticApm::newTransaction($messageName, self::ELASTIC_APM_MESSAGE_TYPE)
             ->distributedTracingHeaderExtractor(
                 fn (string $headerName) => $this->mainDistributedTracingHeaders[$headerName] ?? null,
             )
             ->asCurrent()
             ->begin();
+    }
 
-        try {
-            $envelope = $stack->next()->handle($envelope, $stack);
-        } catch (\Throwable $exception) {
-            $error = new  \Elastic\Apm\CustomErrorData();
-            $error->message = $exception->getMessage();
-            $error->code = $exception->getCode();
+    private static function addTransactionError(
+        \Elastic\Apm\TransactionInterface $transaction,
+        \Throwable $exception
+    ): void {
+        $error = new  \Elastic\Apm\CustomErrorData();
+        $error->message = $exception->getMessage();
+        $error->code = $exception->getCode();
 
-            $transaction->createCustomError($error);
-
-            throw $exception;
-        } finally {
-            $transaction->end();
-        }
-
-        return $envelope;
+        $transaction->createCustomError($error);
     }
 }
