@@ -12,6 +12,8 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
 {
     private const ELASTIC_APM_MESSAGE_TYPE = 'message';
 
+    private array $mainDistributedTracingHeaders = [];
+
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
         $message = $envelope->getMessage();
@@ -29,9 +31,14 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
             }
         );
 
+        $this->mainDistributedTracingHeaders = \array_merge(
+            $this->mainDistributedTracingHeaders,
+            $parentDistributedTracingHeaders,
+        );
+
         $transaction = \Elastic\Apm\ElasticApm::newTransaction($message::messageName(), self::ELASTIC_APM_MESSAGE_TYPE)
             ->distributedTracingHeaderExtractor(
-                static fn (string $headerName) => $parentDistributedTracingHeaders[$headerName] ?? null,
+                fn (string $headerName) => $this->mainDistributedTracingHeaders[$headerName] ?? null,
             )
             ->asCurrent()
             ->begin();
