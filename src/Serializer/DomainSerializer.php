@@ -6,6 +6,7 @@ namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\Ddd\Util\Message\Message;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
