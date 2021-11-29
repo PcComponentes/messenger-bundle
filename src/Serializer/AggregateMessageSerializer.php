@@ -46,7 +46,7 @@ final class AggregateMessageSerializer extends DomainSerializer
 
         $retryCount = $this->extractHeaderRetryCount($encodedEnvelope);
 
-        return (new Envelope($simpleMessage))->with(new RedeliveryStamp($retryCount));
+        return (new Envelope($aggregateMessage))->with(new RedeliveryStamp($retryCount));
     }
 
     public function encode(Envelope $envelope): array
