@@ -38,7 +38,7 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
         return $envelope;
     }
 
-    private function loadMainDistributedTracingHeaders(): array
+    private function loadMainDistributedTracingHeaders(): void
     {
         $currentTransaction = \Elastic\Apm\ElasticApm::getCurrentTransaction();
 
