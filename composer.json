@@ -18,13 +18,25 @@
       "PcComponentes\\SymfonyMessengerBundle\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "PcComponentes\\SymfonyMessengerBundle\\Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": "^7.4 | ^8.0",
     "pccomponentes/ddd-logging": "^2.1",
     "pccomponentes/ddd": "^2.0",
-    "beberlei/assert": "^3.2"
+    "beberlei/assert": "^3.2",
+    "ramsey/uuid": "^3.7"
   },
   "require-dev": {
-    "pccomponentes/coding-standard": "^1.0"
+    "pccomponentes/coding-standard": "^1.0",
+    "phpunit/phpunit": "^9"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
