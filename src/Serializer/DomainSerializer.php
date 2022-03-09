@@ -6,6 +6,7 @@ namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
 use PcComponentes\Ddd\Util\Message\Message;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
+use Ramsey\Uuid\Uuid as RamseyUuid;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
@@ -61,7 +62,10 @@ abstract class DomainSerializer implements SerializerInterface
 
     private function getCorrelationId(array $encodedEnvelope): string
     {
-        if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])) {
+        if (false !== \array_key_exists('x-correlation-id', $encodedEnvelope['headers'])
+            && true === \is_string($encodedEnvelope['headers']['x-correlation-id'])
+            && true === RamseyUuid::isValid($encodedEnvelope['headers']['x-correlation-id'])
+        ) {
             return $encodedEnvelope['headers']['x-correlation-id'];
         }
 
