@@ -44,7 +44,10 @@ final class AggregateMessageSerializer extends DomainSerializer
 
         $this->obtainDomainTrace($aggregateMessage, $encodedEnvelope);
 
-        $retryCount = $this->extractHeaderRetryCount($encodedEnvelope);
+        $retryCount = \max(
+            $this->extractHeaderRetryCount($encodedEnvelope),
+            $this->buildRetryCountFromDeathHeader($encodedEnvelope),
+        );
 
         return (new Envelope($aggregateMessage))->with(new RedeliveryStamp($retryCount));
     }

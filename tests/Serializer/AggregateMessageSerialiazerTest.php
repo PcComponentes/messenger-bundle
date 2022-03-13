@@ -12,6 +12,7 @@ use PcComponentes\SymfonyMessengerBundle\Serializer\AggregateMessageSerializer;
 use PcComponentes\SymfonyMessengerBundle\Tests\Mock\EventMock;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
+use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 
 final class AggregateMessageSerialiazerTest extends TestCase
 {
@@ -45,7 +46,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $messageId = Uuid::v4();
         $aggregateId = Uuid::v4();
         $correlationId = Uuid::v4();
-        $encodedEnvelope = $this->buildEncodedEnvelope($correlationId->value(), $messageId, $aggregateId);
+        $encodedEnvelope = $this->buildEncodedEnvelopeWithCorrelationId($correlationId->value(), $messageId, $aggregateId);
 
         /** @var EventMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
@@ -62,7 +63,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
     {
         $messageId = Uuid::v4();
         $aggregateId = Uuid::v4();
-        $encodedEnvelope = $this->buildEncodedEnvelope(false, $messageId, $aggregateId);
+        $encodedEnvelope = $this->buildEncodedEnvelope($messageId, $aggregateId);
 
         /** @var EventMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
@@ -79,7 +80,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
     {
         $messageId = Uuid::v4();
         $aggregateId = Uuid::v4();
-        $encodedEnvelope = $this->buildEncodedEnvelope(null, $messageId, $aggregateId);
+        $encodedEnvelope = $this->buildEncodedEnvelopeWithCorrelationId(null, $messageId, $aggregateId);
 
         /** @var EventMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
@@ -96,7 +97,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
     {
         $messageId = Uuid::v4();
         $aggregateId = Uuid::v4();
-        $encodedEnvelope = $this->buildEncodedEnvelope("FAKE_UUID", $messageId, $aggregateId);
+        $encodedEnvelope = $this->buildEncodedEnvelopeWithCorrelationId("FAKE_UUID", $messageId, $aggregateId);
 
         /** @var EventMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
@@ -106,10 +107,127 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $this->assertNull($this->tracker->replyTo($messageId));
     }
 
-    private function buildEncodedEnvelope($correlationId, Uuid $messageId, Uuid $aggregateId): array
+    /**
+     * @test
+     */
+    public function given_pristine_message_then_reply_count_is_zero()
+    {
+        $messageId = Uuid::v4();
+        $aggregateId = Uuid::v4();
+        $headers = [
+            'x-retry-count' => 0
+        ];
+
+        $encodedEnvelope = $this->buildEncodedEnvelope($messageId, $aggregateId, $headers);
+        $envelope = $this->serializer->decode($encodedEnvelope);
+        $retryCount = $envelope->last(RedeliveryStamp::class)?->getRetryCount();
+
+        $this->assertEquals(0, $retryCount);
+    }
+
+    /**
+     * @test
+     */
+    public function given_retried_message_using_messenger_retry_logic_then_reply_count_is_expected_one()
+    {
+        $expectedRetries = 3;
+        $messageId = Uuid::v4();
+        $aggregateId = Uuid::v4();
+        $headers = [
+            'x-retry-count' => $expectedRetries
+        ];
+
+        $encodedEnvelope = $this->buildEncodedEnvelope($messageId, $aggregateId, $headers);
+        $envelope = $this->serializer->decode($encodedEnvelope);
+        $retryCount = $envelope->last(RedeliveryStamp::class)?->getRetryCount();
+
+        $this->assertEquals($expectedRetries, $retryCount);
+    }
+
+    /**
+     * @test
+     */
+    public function given_retried_message_using_rabbitmq_dead_letter_retry_logic_then_reply_count_is_the_expected_one()
+    {
+        $expectedRetries = 2;
+        $messageId = Uuid::v4();
+        $aggregateId = Uuid::v4();
+        $headers = [
+            'x-retry-count' => 0,
+            'x-death' => [
+                [
+                    'count' => $expectedRetries,
+                    'exchange' => 'dead_letter',
+                    'queue' => 'commands.dead_letter',
+                    'reason' => 'expired',
+                    'routing-keys' => [EventMock::messageName()],
+                    'time' => new \AMQPTimestamp(floatval('1647193731'))
+                ],
+                [
+                    'count' => $expectedRetries,
+                    'exchange' => 'commands',
+                    'queue' => 'commands',
+                    'reason' => 'rejected',
+                    'routing-keys' => [EventMock::messageName()],
+                    'time' => new \AMQPTimestamp(floatval('1647193701'))
+                ]
+            ],
+            'x-first-death-exchange' => 'commands',
+            'x-first-death-queue' => 'commands',
+            'x-first-death-reason' => 'rejected',
+        ];
+
+        $encodedEnvelope = $this->buildEncodedEnvelope($messageId, $aggregateId, $headers);
+        $envelope = $this->serializer->decode($encodedEnvelope);
+        $retryCount = $envelope->last(RedeliveryStamp::class)?->getRetryCount();
+
+        $this->assertEquals($expectedRetries, $retryCount);
+    }
+
+    /**
+     * @test
+     */
+    public function given_retried_message_using_rabbitmq_dead_letter_retry_logic_and_messenger_one_then_reply_count_is_the_highest_one()
+    {
+        $expectedRetries = 5;
+        $messageId = Uuid::v4();
+        $aggregateId = Uuid::v4();
+        $headers = [
+            'x-retry-count' => $expectedRetries,
+            'x-death' => [
+                [
+                    'count' => $expectedRetries+1,
+                    'exchange' => 'dead_letter',
+                    'queue' => 'commands.dead_letter',
+                    'reason' => 'expired',
+                    'routing-keys' => [EventMock::messageName()],
+                    'time' => new \AMQPTimestamp(floatval('1647193731'))
+                ],
+                [
+                    'count' => $expectedRetries+1,
+                    'exchange' => 'commands',
+                    'queue' => 'commands',
+                    'reason' => 'rejected',
+                    'routing-keys' => [EventMock::messageName()],
+                    'time' => new \AMQPTimestamp(floatval('1647193701'))
+                ]
+            ],
+            'x-first-death-exchange' => 'commands',
+            'x-first-death-queue' => 'commands',
+            'x-first-death-reason' => 'rejected',
+        ];
+
+        $encodedEnvelope = $this->buildEncodedEnvelope($messageId, $aggregateId, $headers);
+        $envelope = $this->serializer->decode($encodedEnvelope);
+        $retryCount = $envelope->last(RedeliveryStamp::class)?->getRetryCount();
+
+        $this->assertEquals($expectedRetries+1, $retryCount);
+    }
+
+    private function buildEncodedEnvelope(Uuid $messageId, Uuid $aggregateId, array $headers = null): array
     {
         $encodedEnvelope = [
-            'headers' => [],
+            'headers' => (null !== $headers) ? $headers : [],
             'body' => \json_encode([
                 'message_id' => $messageId->value(),
                 'aggregate_id' => $aggregateId->value(),
@@ -119,10 +237,13 @@ final class AggregateMessageSerialiazerTest extends TestCase
             ]),
         ];
 
-        if ($correlationId !== false) {
-            $encodedEnvelope['headers']['x-correlation-id'] = $correlationId;
-        }
-
         return $encodedEnvelope;
+    }
+
+    private function buildEncodedEnvelopeWithCorrelationId($correlationId, Uuid $messageId, Uuid $aggregateId)
+    {
+        $headers['x-correlation-id'] = $correlationId;
+
+        return $this->buildEncodedEnvelope($messageId, $aggregateId, $headers);
     }
 }

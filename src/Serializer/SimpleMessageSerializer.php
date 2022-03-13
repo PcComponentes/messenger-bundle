@@ -41,7 +41,10 @@ final class SimpleMessageSerializer extends DomainSerializer
 
         $this->obtainDomainTrace($simpleMessage, $encodedEnvelope);
 
-        $retryCount = $this->extractHeaderRetryCount($encodedEnvelope);
+        $retryCount = \max(
+            $this->extractHeaderRetryCount($encodedEnvelope),
+            $this->buildRetryCountFromDeathHeader($encodedEnvelope),
+        );
 
         return (new Envelope($simpleMessage))->with(new RedeliveryStamp($retryCount));
     }
