@@ -4,35 +4,35 @@ declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Tests\Serializer;
 
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
-use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageJsonApiSerializable;
-use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStreamDeserializer;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSerializable;
+use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
 use PcComponentes\Ddd\Util\Message\Serialization\MessageMappingRegistry;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
-use PcComponentes\SymfonyMessengerBundle\Serializer\AggregateMessageSerializer;
-use PcComponentes\SymfonyMessengerBundle\Tests\Mock\EventMock;
+use PcComponentes\SymfonyMessengerBundle\Serializer\SimpleMessageSerializer;
+use PcComponentes\SymfonyMessengerBundle\Tests\Mock\CommandMock;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 
-final class AggregateMessageSerialiazerTest extends TestCase
+final class SimpleMessageSerialiazerTest extends TestCase
 {
     private Tracker $tracker;
-    private AggregateMessageSerializer $serializer;
+    private SimpleMessageSerializer $serializer;
 
     public function setUp(): void
     {
         $this->tracker = new Tracker();
 
         $registry = new MessageMappingRegistry([
-            EventMock::messageName() => EventMock::class
+            CommandMock::messageName() => CommandMock::class
         ]);
-        $aggregateMessageJsonApiSerializable = new AggregateMessageJsonApiSerializable();
-        $aggregateMessageStreamDeserializer = new AggregateMessageStreamDeserializer($registry);
+        $simpleMessageJsonApiSerializable = new SimpleMessageJsonApiSerializable();
+        $simpleMessageStreamDeserializer = new SimpleMessageStreamDeserializer($registry);
 
-        $this->serializer = new AggregateMessageSerializer(
+        $this->serializer = new SimpleMessageSerializer(
             $this->tracker,
-            $aggregateMessageJsonApiSerializable,
-            $aggregateMessageStreamDeserializer
+            $simpleMessageJsonApiSerializable,
+            $simpleMessageStreamDeserializer
         );
 
         parent::setUp();
@@ -48,7 +48,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $correlationId = Uuid::v4();
         $encodedEnvelope = $this->buildEncodedEnvelopeWithCorrelationId($correlationId->value(), $messageId, $aggregateId);
 
-        /** @var EventMock $message */
+        /** @var CommandMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
 
         $this->assertEquals($messageId, $message->messageId());
@@ -65,7 +65,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $aggregateId = Uuid::v4();
         $encodedEnvelope = $this->buildEncodedEnvelope($messageId, $aggregateId);
 
-        /** @var EventMock $message */
+        /** @var CommandMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
 
         $this->assertEquals($messageId, $message->messageId());
@@ -82,7 +82,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $aggregateId = Uuid::v4();
         $encodedEnvelope = $this->buildEncodedEnvelopeWithCorrelationId(null, $messageId, $aggregateId);
 
-        /** @var EventMock $message */
+        /** @var CommandMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
 
         $this->assertEquals($messageId, $message->messageId());
@@ -99,7 +99,7 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $aggregateId = Uuid::v4();
         $encodedEnvelope = $this->buildEncodedEnvelopeWithCorrelationId("FAKE_UUID", $messageId, $aggregateId);
 
-        /** @var EventMock $message */
+        /** @var CommandMock $message */
         $message = $this->serializer->decode($encodedEnvelope)->getMessage();
 
         $this->assertEquals($messageId, $message->messageId());
@@ -158,22 +158,22 @@ final class AggregateMessageSerialiazerTest extends TestCase
                 [
                     'count' => $expectedRetries,
                     'exchange' => 'dead_letter',
-                    'queue' => 'events.dead_letter',
+                    'queue' => 'commands.dead_letter',
                     'reason' => 'expired',
-                    'routing-keys' => [EventMock::messageName()],
+                    'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193731'))
                 ],
                 [
                     'count' => $expectedRetries,
-                    'exchange' => 'events',
-                    'queue' => 'events',
+                    'exchange' => 'commands',
+                    'queue' => 'commands',
                     'reason' => 'rejected',
-                    'routing-keys' => [EventMock::messageName()],
+                    'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193701'))
                 ]
             ],
-            'x-first-death-exchange' => 'events',
-            'x-first-death-queue' => 'events',
+            'x-first-death-exchange' => 'commands',
+            'x-first-death-queue' => 'commands',
             'x-first-death-reason' => 'rejected',
         ];
 
@@ -198,22 +198,22 @@ final class AggregateMessageSerialiazerTest extends TestCase
                 [
                     'count' => $expectedRetries+1,
                     'exchange' => 'dead_letter',
-                    'queue' => 'events.dead_letter',
+                    'queue' => 'commands.dead_letter',
                     'reason' => 'expired',
-                    'routing-keys' => [EventMock::messageName()],
+                    'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193731'))
                 ],
                 [
                     'count' => $expectedRetries+1,
-                    'exchange' => 'events',
-                    'queue' => 'events',
+                    'exchange' => 'commands',
+                    'queue' => 'commands',
                     'reason' => 'rejected',
-                    'routing-keys' => [EventMock::messageName()],
+                    'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193701'))
                 ]
             ],
-            'x-first-death-exchange' => 'events',
-            'x-first-death-queue' => 'events',
+            'x-first-death-exchange' => 'commands',
+            'x-first-death-queue' => 'commands',
             'x-first-death-reason' => 'rejected',
         ];
 
@@ -229,11 +229,11 @@ final class AggregateMessageSerialiazerTest extends TestCase
         $encodedEnvelope = [
             'headers' => (null !== $headers) ? $headers : [],
             'body' => \json_encode([
-                'message_id' => $messageId->value(),
-                'aggregate_id' => $aggregateId->value(),
-                'name' => EventMock::messageName(),
-                'payload' => [],
-                'occurred_on' => (new \DateTimeImmutable)->format(\DateTimeInterface::ATOM),
+                "data" => [
+                    'message_id' => $messageId->value(),
+                    'type' => CommandMock::messageName(),
+                    'attributes' => [],
+                ]
             ]),
         ];
 
