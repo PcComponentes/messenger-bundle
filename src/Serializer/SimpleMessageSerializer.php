@@ -12,6 +12,7 @@ use PcComponentes\DddLogging\DomainTrace\Tracker;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
+use Throwable;
 
 final class SimpleMessageSerializer extends DomainSerializer
 {
@@ -36,7 +37,9 @@ final class SimpleMessageSerializer extends DomainSerializer
         try {
             $simpleMessage = $this->deserializer->unserialize($message);
         } catch (MessageClassNotFoundException $exception) {
-            throw new MessageDecodingFailedException();
+            throw new MessageDecodingFailedException('Message class not found', 0, $exception);
+        } catch (Throwable $exception) {
+            throw new MessageDecodingFailedException('Unable to instantiate class for message. ' . $exception->getMessage(), 0, $exception);
         }
 
         $this->obtainDomainTrace($simpleMessage, $encodedEnvelope);
