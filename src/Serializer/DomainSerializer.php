@@ -53,10 +53,33 @@ abstract class DomainSerializer implements SerializerInterface
         return (int) $encodedEnvelope['headers']['x-retry-count'];
     }
 
+    protected function buildRetryCountFromDeathHeader(array $encodedEnvelope): int
+    {
+        if (false === \array_key_exists('x-death', $encodedEnvelope['headers'])) {
+            return 0;
+        }
+
+        if (false === \is_array($encodedEnvelope['headers']['x-death'])) {
+            return 0;
+        }
+
+        if (0 === \count($encodedEnvelope['headers']['x-death'])) {
+            return 0;
+        }
+
+        $death = array_slice($encodedEnvelope['headers']['x-death'], 0, 1)[0];
+
+        if (false === \array_key_exists('count', $death)) {
+            return 0;
+        }
+
+        return (int) $death['count'];
+    }
+
     protected function extractEnvelopeRetryCount(Envelope $envelope): int
     {
         $retryCountStamp = $envelope->last(RedeliveryStamp::class);
-        
+
         return null !== $retryCountStamp ? $retryCountStamp->getRetryCount() : 0;
     }
 
