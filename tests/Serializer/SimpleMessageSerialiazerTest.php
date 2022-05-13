@@ -149,24 +149,25 @@ final class SimpleMessageSerialiazerTest extends TestCase
      */
     public function given_retried_message_using_rabbitmq_dead_letter_retry_logic_then_reply_count_is_the_expected_one()
     {
-        $expectedRetries = 2;
+        $letterRetries = 2;
+        $expectedRetries = 2 * $letterRetries;
         $messageId = Uuid::v4();
         $aggregateId = Uuid::v4();
         $headers = [
             'x-retry-count' => 0,
             'x-death' => [
                 [
-                    'count' => $expectedRetries,
+                    'count' => $letterRetries,
                     'exchange' => 'dead_letter',
-                    'queue' => 'commands.dead_letter',
+                    'queue' => 'commands.dead_letter_2',
                     'reason' => 'expired',
                     'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193731'))
                 ],
                 [
-                    'count' => $expectedRetries,
-                    'exchange' => 'commands',
-                    'queue' => 'commands',
+                    'count' => $letterRetries,
+                    'exchange' => 'dead_letter',
+                    'queue' => 'commands.dead_letter_1',
                     'reason' => 'rejected',
                     'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193701'))
@@ -190,23 +191,24 @@ final class SimpleMessageSerialiazerTest extends TestCase
     public function given_retried_message_using_rabbitmq_dead_letter_retry_logic_and_messenger_one_then_reply_count_is_the_highest_one()
     {
         $expectedRetries = 5;
+        $highestRetries = 2 * $expectedRetries;
         $messageId = Uuid::v4();
         $aggregateId = Uuid::v4();
         $headers = [
             'x-retry-count' => $expectedRetries,
             'x-death' => [
                 [
-                    'count' => $expectedRetries+1,
+                    'count' => $expectedRetries,
                     'exchange' => 'dead_letter',
-                    'queue' => 'commands.dead_letter',
+                    'queue' => 'commands.dead_letter_2',
                     'reason' => 'expired',
                     'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193731'))
                 ],
                 [
-                    'count' => $expectedRetries+1,
-                    'exchange' => 'commands',
-                    'queue' => 'commands',
+                    'count' => $expectedRetries,
+                    'exchange' => 'dead_letter',
+                    'queue' => 'commands.dead_letter_1',
                     'reason' => 'rejected',
                     'routing-keys' => [CommandMock::messageName()],
                     'time' => new \AMQPTimestamp(floatval('1647193701'))
@@ -221,7 +223,7 @@ final class SimpleMessageSerialiazerTest extends TestCase
         $envelope = $this->serializer->decode($encodedEnvelope);
         $retryCount = $envelope->last(RedeliveryStamp::class)?->getRetryCount();
 
-        $this->assertEquals($expectedRetries+1, $retryCount);
+        $this->assertEquals($highestRetries, $retryCount);
     }
 
     private function buildEncodedEnvelope(Uuid $messageId, Uuid $aggregateId, array $headers = null): array
