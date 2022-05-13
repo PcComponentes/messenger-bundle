@@ -67,13 +67,16 @@ abstract class DomainSerializer implements SerializerInterface
             return 0;
         }
 
-        $death = array_slice($encodedEnvelope['headers']['x-death'], 0, 1)[0];
+        $retryCount = 0;
+        foreach ($encodedEnvelope['headers']['x-death'] as $death) {
+            if (false === \array_key_exists('count', $death)) {
+                continue;
+            }
 
-        if (false === \array_key_exists('count', $death)) {
-            return 0;
+            $retryCount = $retryCount + (int) $death['count'];
         }
 
-        return (int) $death['count'];
+        return $retryCount;
     }
 
     protected function extractEnvelopeRetryCount(Envelope $envelope): int
