@@ -25,11 +25,11 @@
   },
   "require": {
     "ext-amqp": "*",
-    "php": "^7.4 | ^8.0",
+    "php": "^7.4 || ^8.0",
     "pccomponentes/ddd-logging": "^2.1",
-    "pccomponentes/ddd": "^2.0",
+    "pccomponentes/ddd": "^2.0 || ^3.0",
     "beberlei/assert": "^3.2",
-    "ramsey/uuid": "^3.7"
+    "ramsey/uuid": "^4.0"
   },
   "require-dev": {
     "pccomponentes/coding-standard": "^1.0",
