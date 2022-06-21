@@ -47,6 +47,23 @@ final class SimpleMessagePublisherMiddlewareTest extends MiddlewareTestCase
         $this->assertEquals($secondMessageId, $this->bus->getMessages()[1]->getMessage()->messageId()->value());
     }
 
+    public function test_given_converters_dispatch_one_command_and_the_other_does_not_dispatch_anything_then_ok()
+    {
+        $firstMessageId = Uuid::v4();
+
+        $envelope = new Envelope(EventMock::fromPayload(Uuid::v4(), Uuid::v4(), DateTimeValueObject::now(), []));
+        $envelope = $envelope->with(
+            new HandledStamp(CommandMock::fromPayload($firstMessageId, []), 'ConverterA'),
+            new HandledStamp(null, 'ConverterB'),
+        );
+
+        $middleware = new SimpleMessagePublisherMiddleware($this->bus, $this->extractor);
+        $middleware->handle($envelope, $this->getStackMock());
+
+        $this->assertCount(1, $this->bus->getMessages());
+        $this->assertEquals($firstMessageId, $this->bus->getMessages()[0]->getMessage()->messageId()->value());
+    }
+
     public function test_given_converters_dispatch_both_one_command_and_an_array_of_commands_then_ok()
     {
         $firstMessageId = Uuid::v4();
@@ -60,6 +77,33 @@ final class SimpleMessagePublisherMiddlewareTest extends MiddlewareTestCase
                     CommandMock::fromPayload($secondMessageId, []),
                     CommandMock::fromPayload($thirdMessageId, []),
                 ],
+                'ConverterB'
+            ),
+        );
+
+        $middleware = new SimpleMessagePublisherMiddleware($this->bus, $this->extractor);
+        $middleware->handle($envelope, $this->getStackMock());
+
+        $this->assertCount(3, $this->bus->getMessages());
+        $this->assertEquals($firstMessageId, $this->bus->getMessages()[0]->getMessage()->messageId()->value());
+        $this->assertEquals($secondMessageId, $this->bus->getMessages()[1]->getMessage()->messageId()->value());
+        $this->assertEquals($thirdMessageId, $this->bus->getMessages()[2]->getMessage()->messageId()->value());
+    }
+
+    public function test_given_converters_dispatch_both_one_command_and_an_array_of_commands_with_one_null_then_ok()
+    {
+        $firstMessageId = Uuid::v4();
+        $secondMessageId = Uuid::v4();
+        $thirdMessageId = Uuid::v4();
+
+        $envelope = new Envelope(EventMock::fromPayload(Uuid::v4(), Uuid::v4(), DateTimeValueObject::now(), []));
+        $envelope = $envelope->with(
+            new HandledStamp(CommandMock::fromPayload($firstMessageId, []), 'ConverterA'),
+            new HandledStamp([
+                CommandMock::fromPayload($secondMessageId, []),
+                CommandMock::fromPayload($thirdMessageId, []),
+                null,
+            ],
                 'ConverterB'
             ),
         );

@@ -40,6 +40,10 @@ final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
             }
 
             foreach ($commands as $theCommand) {
+                if (false === \is_object($theCommand)) {
+                    continue;
+                }
+
                 $this->messageBroker->dispatch($theCommand);
             }
         }

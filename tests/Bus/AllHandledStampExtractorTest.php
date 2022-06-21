@@ -31,7 +31,7 @@ final class AllHandledStampExtractorTest extends TestCase
         parent::setUp();
     }
 
-    public function test_single_command_is_returned()
+    public function test_given_single_command_is_returned_then_on()
     {
         $envelope = new Envelope(new \stdClass());
         $handledStamp = new HandledStamp(CommandMock::fromPayload(Uuid::v4(), []), 'handler');
@@ -43,7 +43,22 @@ final class AllHandledStampExtractorTest extends TestCase
         $this->assertInstanceOf(CommandMock::class, $results[0]);
     }
 
-    public function test_single_and_multiple_command_are_returned()
+    public function test_given_single_command_and_null_are_returned_then_on()
+    {
+        $envelope = new Envelope(new \stdClass());
+        $handledEnvelope = $envelope->with(
+            new HandledStamp(CommandMock::fromPayload(Uuid::v4(), []), 'converterA'),
+            new HandledStamp(null, 'converterB')
+        );
+
+        $results = $this->extractor->extract($handledEnvelope);
+
+        $this->assertCount(2, $results);
+        $this->assertInstanceOf(CommandMock::class, $results[0]);
+        $this->assertNull($results[1]);
+    }
+
+    public function test_given_single_and_multiple_command_are_returned_then_ok()
     {
         $envelope = new Envelope(new \stdClass());
         $firstCommandId = Uuid::v4();
