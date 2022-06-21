@@ -19,7 +19,6 @@ final class AllHandledStampExtractor implements MessageResultExtractor
 
             foreach ($stamp as $resultStamp) {
                 \assert($resultStamp instanceof HandledStamp);
-
                 $results[] = $resultStamp->getResult();
             }
         }

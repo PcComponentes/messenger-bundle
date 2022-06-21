@@ -23,13 +23,13 @@ final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
         $resultStack = $stack->next()->handle($envelope, $stack);
-        $convertersResult = $this->extractor->extract($resultStack);
+        $commandsResult = $this->extractor->extract($resultStack);
 
-        if (null === $convertersResult || (\is_countable($convertersResult) && 0 === \count($convertersResult))) {
+        if (null === $commandsResult || (\is_countable($commandsResult) && 0 === \count($commandsResult))) {
             return $resultStack;
         }
 
-        foreach ($convertersResult as $commands) {
+        foreach ($commandsResult as $commands) {
             if (null === $commands) {
                 continue;
             }
