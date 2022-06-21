@@ -29,12 +29,23 @@ final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
             return $resultStack;
         }
 
-        foreach ($commandsResult as $theCommand) {
-            if (null === $theCommand) {
+        foreach ($commandsResult as $commands) {
+            if (null === $commands) {
                 continue;
             }
 
-            $this->messageBroker->dispatch($theCommand);
+            // We can accept both one or an array of commands to be dispatched
+            if (false === \is_array($commands)) {
+                $commands = [$commands];
+            }
+
+            foreach ($commands as $theCommand) {
+                if (false === \is_object($theCommand)) {
+                    continue;
+                }
+
+                $this->messageBroker->dispatch($theCommand);
+            }
         }
 
         return $resultStack;
