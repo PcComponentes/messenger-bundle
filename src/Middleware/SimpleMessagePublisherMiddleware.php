@@ -23,28 +23,28 @@ final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {
         $resultStack = $stack->next()->handle($envelope, $stack);
-        $commandsToBeDispatched = $this->extractor->extract($resultStack);
+        $convertersResult = $this->extractor->extract($resultStack);
 
-        if (null === $commandsToBeDispatched || (\is_countable($commandsToBeDispatched) && 0 === \count($commandsToBeDispatched))) {
+        if (null === $convertersResult || (\is_countable($convertersResult) && 0 === \count($convertersResult))) {
             return $resultStack;
         }
 
-        foreach ($commandsToBeDispatched as $command) {
-            if (null === $command) {
+        foreach ($convertersResult as $commands) {
+            if (null === $commands) {
                 continue;
             }
 
-            // We can accept an array of commands to be executed
-            if (true === \is_array($command)) {
-                foreach ($command as $singleCommand) {
-                    if (null === $singleCommand) {
-                        continue;
-                    }
+            // We can accept both one or an array of commands to be dispatched
+            if (false === \is_array($commands)) {
+                $commands = [$commands];
+            }
 
-                    $this->messageBroker->dispatch($singleCommand);
+            foreach ($commands as $theCommand) {
+                if (null === $theCommand) {
+                    continue;
                 }
-            } else {
-                $this->messageBroker->dispatch($command);
+
+                $this->messageBroker->dispatch($theCommand);
             }
         }
 
