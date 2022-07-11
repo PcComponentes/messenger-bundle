@@ -111,7 +111,7 @@ final class AggregateMessageSerializer extends DomainSerializer
         ;
 
         Assert::lazy()->tryAll()
-            ->that($content['data']['attributes']['aggregate_id'], 'aggregate_id')->uuid()
+            ->that($content['data']['attributes']['aggregate_id'], 'aggregate_id')->string()->notEmpty()
             ->verifyNow()
         ;
     }
@@ -147,7 +147,7 @@ final class AggregateMessageSerializer extends DomainSerializer
 
         Assert::lazy()->tryAll()
             ->that($content['message_id'], 'message_id')->uuid()
-            ->that($content['aggregate_id'], 'aggregate_id')->uuid()
+            ->that($content['aggregate_id'], 'aggregate_id')->string()->notEmpty()
             ->that($content['name'], 'type')->string()->notEmpty()
             ->that($content['payload'], 'payload')->isArray()
             ->that($content['occurred_on'], 'occurred_on')->notEmpty()
