@@ -84,7 +84,7 @@ final class AggregateMessageSerializer extends DomainSerializer
         return new AggregateMessageStream(
             $aggregateMessage['message_id'],
             $aggregateMessage['attributes']['aggregate_id'],
-            (int) $aggregateMessage['occurred_on'],
+            $aggregateMessage['occurred_on'],
             $aggregateMessage['type'],
             self::AGGREGATE_VERSION,
             \json_encode($aggregateMessage['attributes']),
@@ -126,7 +126,7 @@ final class AggregateMessageSerializer extends DomainSerializer
         return new AggregateMessageStream(
             $aggregateMessage['message_id'],
             $aggregateMessage['aggregate_id'],
-            $occurredOn->getTimestamp(),
+            (string) $occurredOn->getTimestamp(),
             $aggregateMessage['name'],
             self::AGGREGATE_VERSION,
             \json_encode($aggregateMessage['payload']),

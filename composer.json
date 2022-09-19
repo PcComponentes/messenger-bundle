@@ -25,11 +25,12 @@
   },
   "require": {
     "ext-amqp": "*",
-    "php": "^7.4 || ^8.0",
+    "php": "^8.0",
     "pccomponentes/ddd-logging": "^2.1",
-    "pccomponentes/ddd": "^2.0 || ^3.0",
+    "pccomponentes/ddd": "^3.2",
     "beberlei/assert": "^3.2",
-    "ramsey/uuid": "^4.0"
+    "ramsey/uuid": "^4.0",
+    "symfony/framework-bundle": "^4.4|^5.0"
   },
   "require-dev": {
     "pccomponentes/coding-standard": "^1.0",
