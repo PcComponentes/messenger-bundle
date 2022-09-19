@@ -17,7 +17,7 @@ final class SymfonyMessengerExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $occurredOnFormat = $config['aggregate_message']['occurred_on'];
+        $occurredOnFormat = $config['aggregate_message']['occurred_on']['format'];
 
         $container->addDefinitions([
             'pccom.messenger_bundle.aggregate_message.serializer.json_api_serializer' => new Definition(
