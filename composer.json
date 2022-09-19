@@ -27,7 +27,7 @@
     "ext-amqp": "*",
     "php": "^7.4 || ^8.0",
     "pccomponentes/ddd-logging": "^2.1",
-    "pccomponentes/ddd": "^2.0 || ^3.0",
+    "pccomponentes/ddd": "^2.0 || 3.0 || 3.1",
     "beberlei/assert": "^3.2",
     "ramsey/uuid": "^4.0"
   },
