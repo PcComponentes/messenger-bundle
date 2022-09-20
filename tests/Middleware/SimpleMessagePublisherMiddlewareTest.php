@@ -5,6 +5,7 @@ namespace PcComponentes\SymfonyMessengerBundle\Tests\Middleware;
 
 use PcComponentes\Ddd\Domain\Model\ValueObject\DateTimeValueObject;
 use PcComponentes\Ddd\Domain\Model\ValueObject\Uuid;
+use PcComponentes\Ddd\Util\Message\ValueObject\AggregateId;
 use PcComponentes\SymfonyMessengerBundle\Bus\AllHandledStampExtractor;
 use PcComponentes\SymfonyMessengerBundle\Middleware\SimpleMessagePublisherMiddleware;
 use PcComponentes\SymfonyMessengerBundle\Tests\Mock\CommandMock;
@@ -33,7 +34,14 @@ final class SimpleMessagePublisherMiddlewareTest extends MiddlewareTestCase
         $firstMessageId = Uuid::v4();
         $secondMessageId = Uuid::v4();
 
-        $envelope = new Envelope(EventMock::fromPayload(Uuid::v4(), Uuid::v4(), DateTimeValueObject::now(), []));
+        $envelope = new Envelope(
+            EventMock::fromPayload(
+                Uuid::v4(),
+                AggregateId::from(Uuid::v4()->value()),
+                DateTimeValueObject::now(),
+                [],
+            ),
+        );
         $envelope = $envelope->with(
             new HandledStamp(CommandMock::fromPayload($firstMessageId, []), 'ConverterA'),
             new HandledStamp(CommandMock::fromPayload($secondMessageId, []), 'ConverterB'),
@@ -51,7 +59,14 @@ final class SimpleMessagePublisherMiddlewareTest extends MiddlewareTestCase
     {
         $firstMessageId = Uuid::v4();
 
-        $envelope = new Envelope(EventMock::fromPayload(Uuid::v4(), Uuid::v4(), DateTimeValueObject::now(), []));
+        $envelope = new Envelope(
+            EventMock::fromPayload(
+                Uuid::v4(),
+                AggregateId::from(Uuid::v4()->value()),
+                DateTimeValueObject::now(),
+                [],
+            ),
+        );
         $envelope = $envelope->with(
             new HandledStamp(CommandMock::fromPayload($firstMessageId, []), 'ConverterA'),
             new HandledStamp(null, 'ConverterB'),
@@ -70,13 +85,20 @@ final class SimpleMessagePublisherMiddlewareTest extends MiddlewareTestCase
         $secondMessageId = Uuid::v4();
         $thirdMessageId = Uuid::v4();
 
-        $envelope = new Envelope(EventMock::fromPayload(Uuid::v4(), Uuid::v4(), DateTimeValueObject::now(), []));
+        $envelope = new Envelope(
+            EventMock::fromPayload(
+                Uuid::v4(),
+                AggregateId::from(Uuid::v4()->value()),
+                DateTimeValueObject::now(),
+                [],
+            ),
+        );
         $envelope = $envelope->with(
             new HandledStamp(CommandMock::fromPayload($firstMessageId, []), 'ConverterA'),
             new HandledStamp([
-                    CommandMock::fromPayload($secondMessageId, []),
-                    CommandMock::fromPayload($thirdMessageId, []),
-                ],
+                CommandMock::fromPayload($secondMessageId, []),
+                CommandMock::fromPayload($thirdMessageId, []),
+            ],
                 'ConverterB'
             ),
         );
@@ -96,7 +118,14 @@ final class SimpleMessagePublisherMiddlewareTest extends MiddlewareTestCase
         $secondMessageId = Uuid::v4();
         $thirdMessageId = Uuid::v4();
 
-        $envelope = new Envelope(EventMock::fromPayload(Uuid::v4(), Uuid::v4(), DateTimeValueObject::now(), []));
+        $envelope = new Envelope(
+            EventMock::fromPayload(
+                Uuid::v4(),
+                AggregateId::from(Uuid::v4()->value()),
+                DateTimeValueObject::now(),
+                [],
+            ),
+        );
         $envelope = $envelope->with(
             new HandledStamp(CommandMock::fromPayload($firstMessageId, []), 'ConverterA'),
             new HandledStamp([

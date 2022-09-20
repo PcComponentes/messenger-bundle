@@ -27,7 +27,7 @@
     "ext-amqp": "*",
     "php": "^8.0",
     "pccomponentes/ddd-logging": "^2.1",
-    "pccomponentes/ddd": "^3.2",
+    "pccomponentes/ddd": "^4.0",
     "beberlei/assert": "^3.2",
     "ramsey/uuid": "^4.0",
     "symfony/framework-bundle": "^4.4|^5.0"
