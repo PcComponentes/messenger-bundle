@@ -68,12 +68,13 @@ abstract class DomainSerializer implements SerializerInterface
         }
 
         $retryCount = 0;
+
         foreach ($encodedEnvelope['headers']['x-death'] as $death) {
             if (false === \array_key_exists('count', $death)) {
                 continue;
             }
 
-            $retryCount = $retryCount + (int) $death['count'];
+            $retryCount += (int) $death['count'];
         }
 
         return $retryCount;
@@ -83,7 +84,9 @@ abstract class DomainSerializer implements SerializerInterface
     {
         $retryCountStamp = $envelope->last(RedeliveryStamp::class);
 
-        return null !== $retryCountStamp ? $retryCountStamp->getRetryCount() : 0;
+        return null !== $retryCountStamp
+            ? $retryCountStamp->getRetryCount()
+            : 0;
     }
 
     private function getCorrelationId(array $encodedEnvelope): string

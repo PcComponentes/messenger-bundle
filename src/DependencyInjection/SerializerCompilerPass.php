@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace PcComponentes\SymfonyMessengerBundle\DependencyInjection;
 
-use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageJsonApiSerializable;
-use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\AggregateMessageStreamDeserializer;
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSerializable;
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
@@ -28,15 +26,6 @@ final class SerializerCompilerPass implements CompilerPassInterface
                     new Reference(Tracker::class),
                     new Reference('pccom.messenger_bundle.aggregate_message.serializer.json_api_serializer'),
                     new Reference('pccom.messenger_bundle.aggregate_message.serializer.stream_deserializer'),
-                ],
-            ),
-            'pccom.messenger_bundle.aggregate_message.serializer.json_api_serializer' => new Definition(
-                AggregateMessageJsonApiSerializable::class,
-            ),
-            'pccom.messenger_bundle.aggregate_message.serializer.stream_deserializer' => new Definition(
-                AggregateMessageStreamDeserializer::class,
-                [
-                    new Reference('pccom.messenger_bundle.mapping_registry.aggregate_message'),
                 ],
             ),
         ]);

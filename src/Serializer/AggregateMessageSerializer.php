@@ -42,7 +42,11 @@ final class AggregateMessageSerializer extends DomainSerializer
         } catch (MessageClassNotFoundException $exception) {
             throw new MessageDecodingFailedException('Message class not found', 0, $exception);
         } catch (Throwable $exception) {
-            throw new MessageDecodingFailedException('Unable to instantiate class for message. ' . $exception->getMessage(), 0, $exception);
+            throw new MessageDecodingFailedException(
+                'Unable to instantiate class for message. ' . $exception->getMessage(),
+                0,
+                $exception,
+            );
         }
 
         $this->obtainDomainTrace($aggregateMessage, $encodedEnvelope);
@@ -84,7 +88,7 @@ final class AggregateMessageSerializer extends DomainSerializer
         return new AggregateMessageStream(
             $aggregateMessage['message_id'],
             $aggregateMessage['attributes']['aggregate_id'],
-            (int) $aggregateMessage['occurred_on'],
+            (float) $aggregateMessage['occurred_on'],
             $aggregateMessage['type'],
             self::AGGREGATE_VERSION,
             \json_encode($aggregateMessage['attributes']),
@@ -126,7 +130,7 @@ final class AggregateMessageSerializer extends DomainSerializer
         return new AggregateMessageStream(
             $aggregateMessage['message_id'],
             $aggregateMessage['aggregate_id'],
-            $occurredOn->getTimestamp(),
+            (float) $occurredOn->getTimestamp(),
             $aggregateMessage['name'],
             self::AGGREGATE_VERSION,
             \json_encode($aggregateMessage['payload']),
