@@ -31,6 +31,7 @@ final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
 
         foreach ($commandsResult as $commands) {
             if (null === $commands) {
+
                 continue;
             }
 
