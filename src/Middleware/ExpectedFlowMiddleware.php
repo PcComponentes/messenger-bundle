@@ -20,7 +20,7 @@ final class ExpectedFlowMiddleware implements MiddlewareInterface
 
         try {
             return $stack->next()->handle($envelope, $stack);
-        } catch (ExistsException|UnrecoverableExceptionInterface $e) {
+        } catch (ExistsException|UnrecoverableExceptionInterface) {
             return $envelope;
         }
     }

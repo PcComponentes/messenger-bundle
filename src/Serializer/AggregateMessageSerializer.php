@@ -19,18 +19,12 @@ final class AggregateMessageSerializer extends DomainSerializer
 {
     private const AGGREGATE_VERSION = 0;
 
-    private AggregateMessageJsonApiSerializable $serializer;
-    private AggregateMessageStreamDeserializer $deserializer;
-
     public function __construct(
         Tracker $tracker,
-        AggregateMessageJsonApiSerializable $serializer,
-        AggregateMessageStreamDeserializer $deserializer
+        private AggregateMessageJsonApiSerializable $serializer,
+        private AggregateMessageStreamDeserializer $deserializer,
     ) {
         parent::__construct($tracker);
-
-        $this->serializer = $serializer;
-        $this->deserializer = $deserializer;
     }
 
     public function decode(array $encodedEnvelope): Envelope
