@@ -16,18 +16,12 @@ use Throwable;
 
 final class SimpleMessageSerializer extends DomainSerializer
 {
-    private SimpleMessageJsonApiSerializable $serializer;
-    private SimpleMessageStreamDeserializer $deserializer;
-
     public function __construct(
         Tracker $tracker,
-        SimpleMessageJsonApiSerializable $serializer,
-        SimpleMessageStreamDeserializer $deserializer
+        private SimpleMessageJsonApiSerializable $serializer,
+        private SimpleMessageStreamDeserializer $deserializer,
     ) {
         parent::__construct($tracker);
-
-        $this->serializer = $serializer;
-        $this->deserializer = $deserializer;
     }
 
     public function decode(array $encodedEnvelope): Envelope

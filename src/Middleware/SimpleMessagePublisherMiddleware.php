@@ -11,13 +11,8 @@ use Symfony\Component\Messenger\Middleware\StackInterface;
 
 final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
 {
-    private MessageBusInterface $messageBroker;
-    private AllHandledStampExtractor $extractor;
-
-    public function __construct(MessageBusInterface $messageBroker, AllHandledStampExtractor $extractor)
+    public function __construct(private MessageBusInterface $messageBroker, private AllHandledStampExtractor $extractor)
     {
-        $this->messageBroker = $messageBroker;
-        $this->extractor = $extractor;
     }
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
@@ -31,10 +26,8 @@ final class SimpleMessagePublisherMiddleware implements MiddlewareInterface
 
         foreach ($commandsResult as $commands) {
             if (null === $commands) {
-
                 continue;
             }
-
             // We can accept both one or an array of commands to be dispatched
             if (false === \is_array($commands)) {
                 $commands = [$commands];

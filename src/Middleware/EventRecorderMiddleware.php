@@ -11,11 +11,8 @@ use Symfony\Component\Messenger\Middleware\StackInterface;
 
 final class EventRecorderMiddleware implements MiddlewareInterface
 {
-    private EventStoreRepository $eventStore;
-
-    public function __construct(EventStoreRepository $eventStore)
+    public function __construct(private EventStoreRepository $eventStore)
     {
-        $this->eventStore = $eventStore;
     }
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope

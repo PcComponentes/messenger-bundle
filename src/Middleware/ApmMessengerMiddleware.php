@@ -69,7 +69,7 @@ final class ApmMessengerMiddleware implements MiddlewareInterface
         \Elastic\Apm\TransactionInterface $transaction,
         \Throwable $exception
     ): void {
-        $error = new  \Elastic\Apm\CustomErrorData();
+        $error = new \Elastic\Apm\CustomErrorData();
         $error->message = $exception->getMessage();
         $error->code = $exception->getCode();
 

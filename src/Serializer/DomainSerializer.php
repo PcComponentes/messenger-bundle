@@ -13,11 +13,8 @@ use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 abstract class DomainSerializer implements SerializerInterface
 {
-    private Tracker $tracker;
-
-    protected function __construct(Tracker $tracker)
+    protected function __construct(private Tracker $tracker)
     {
-        $this->tracker = $tracker;
     }
 
     protected function tracker(): Tracker
@@ -84,9 +81,7 @@ abstract class DomainSerializer implements SerializerInterface
     {
         $retryCountStamp = $envelope->last(RedeliveryStamp::class);
 
-        return null !== $retryCountStamp
-            ? $retryCountStamp->getRetryCount()
-            : 0;
+        return $retryCountStamp?->getRetryCount() ?? 0;
     }
 
     private function getCorrelationId(array $encodedEnvelope): string
