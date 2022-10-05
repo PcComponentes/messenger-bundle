@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Middleware;
 
 use PcComponentes\Ddd\Util\Message\Message;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
-use Symfony\Component\Messenger\Transport\AmqpExt\AmqpStamp;
 
 final class RoutingKeyMiddleware implements MiddlewareInterface
 {
