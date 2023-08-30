@@ -9,6 +9,7 @@ use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSer
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStream;
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
+use PcComponentes\SymfonyMessengerBundle\Command\UnsupportedCommand;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
@@ -32,12 +33,8 @@ final class SimpleMessageSerializer extends DomainSerializer
             $simpleMessage = $this->deserializer->unserialize($message);
         } catch (MessageClassNotFoundException $exception) {
             throw new MessageDecodingFailedException('Message class not found', 0, $exception);
-        } catch (Throwable $exception) {
-            throw new MessageDecodingFailedException(
-                'Unable to instantiate class for message. ' . $exception->getMessage(),
-                0,
-                $exception,
-            );
+        } catch (Throwable) {
+            $simpleMessage = $this->unsupportedCommand($message);
         }
 
         $this->obtainDomainTrace($simpleMessage, $encodedEnvelope);
@@ -98,5 +95,19 @@ final class SimpleMessageSerializer extends DomainSerializer
             ->that($content['data']['attributes'], 'attributes')->isArray()
             ->verifyNow()
         ;
+    }
+
+    private function unsupportedCommand(SimpleMessageStream $message): UnsupportedCommand
+    {
+        return UnsupportedCommand::create(
+            $message->messageId(),
+            $message->messageName(),
+            \json_decode(
+                $message->payload(),
+                true,
+                512,
+                \JSON_THROW_ON_ERROR,
+            ),
+        );
     }
 }
