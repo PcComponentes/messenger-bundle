@@ -30,8 +30,8 @@
     "pccomponentes/ddd": "^4.0",
     "beberlei/assert": "^3.3",
     "ramsey/uuid": "^4.5",
-    "symfony/framework-bundle": "^6.0",
-    "symfony/amqp-messenger": "^6.0"
+    "symfony/framework-bundle": "^6.0 || ^7.0",
+    "symfony/amqp-messenger": "^6.0 || ^7.0"
   },
   "require-dev": {
     "pccomponentes/coding-standard": "^2.0",
