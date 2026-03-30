@@ -15,7 +15,9 @@ final class HandlerExceptionCatcherMiddleware implements MiddlewareInterface
         try {
             return $stack->next()->handle($envelope, $stack);
         } catch (HandlerFailedException $exception) {
-            throw $exception->getNestedExceptions()[0];
+            $wrappedExceptions = $exception->getWrappedExceptions();
+
+            throw \array_values($wrappedExceptions)[0];
         }
     }
 }
