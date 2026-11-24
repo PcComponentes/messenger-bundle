@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace PcComponentes\SymfonyMessengerBundle\Serializer;
 
 use Assert\Assert;
-use PcComponentes\Ddd\Util\Message\Serialization\Exception\MessageClassNotFoundException;
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageJsonApiSerializable;
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStream;
 use PcComponentes\Ddd\Util\Message\Serialization\JsonApi\SimpleMessageStreamDeserializer;
 use PcComponentes\DddLogging\DomainTrace\Tracker;
 use PcComponentes\SymfonyMessengerBundle\Command\UnsupportedCommand;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\RedeliveryStamp;
 use Throwable;
 
@@ -31,8 +29,6 @@ final class SimpleMessageSerializer extends DomainSerializer
 
         try {
             $simpleMessage = $this->deserializer->unserialize($message);
-        } catch (MessageClassNotFoundException $exception) {
-            throw new MessageDecodingFailedException('Message class not found', 0, $exception);
         } catch (Throwable) {
             $simpleMessage = $this->unsupportedCommand($message);
         }
